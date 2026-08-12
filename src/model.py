@@ -35,3 +35,14 @@ class SelectionExpression(BaseModel):
     features: set[str]
     # element-level sub-selections, e.g. one per circumstance
     sub_selections: list["SelectionExpression"] = []
+
+class Nexus(BaseModel):
+    id: str
+    primary_clause_id: str
+    secondary_clause_id: str
+    selection: SelectionExpression   # rank must be "clause-nexus"
+
+    def notation_for(self, role: Literal["primary", "secondary"]) -> str:
+        """IFG notation for one clause in this nexus, e.g. 'α' or '×β'."""
+        ...
+        

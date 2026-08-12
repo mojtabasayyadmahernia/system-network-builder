@@ -1,0 +1,118 @@
+{
+    "name": "THEME",
+    "metafunction": "textual",
+    "rank": "clause",
+    "source": "Halliday & Matthiessen (2014), IFG4, Ch. 3",
+    "display": true,
+    "_comment": "Markedness encoded as a single system (see markedness_criteria on THEME_SELECTION terms) rather than mood-conditional systems; the analyzer resolves it using MOOD features. Multiple Theme is derived from textual/interpersonal presence, not selected.",
+    "systems": [
+      {
+        "id": "THEME_SELECTION",
+        "name": "THEME SELECTION",
+        "rank": "clause",
+        "entry": { "op": "root" },
+        "terms": [
+          {
+            "id": "unmarked-theme",
+            "name": "unmarked",
+            "gloss": "Theme conflates with the mood-typical element",
+            "ifg_ref": "3.4",
+            "markedness_criteria": {
+              "declarative": "Subject is Theme",
+              "polar": "Finite ^ Subject is Theme",
+              "wh-interrogative": "WH-element is Theme",
+              "jussive": "Predicator is Theme",
+              "oblative": "'let me' is Theme",
+              "suggestive": "'let's' is Theme"
+            }
+          },
+          {
+            "id": "marked-theme",
+            "name": "marked",
+            "gloss": "Theme is not the mood-typical element",
+            "ifg_ref": "3.4"
+          }
+        ]
+      },
+      {
+        "id": "MARKED_THEME_TYPE",
+        "name": "MARKED THEME TYPE",
+        "rank": "clause",
+        "entry": { "op": "feature", "value": "marked-theme" },
+        "terms": [
+          { "id": "marked-adjunct",    "name": "Adjunct as Theme",    "gloss": "On Saturday, they left" },
+          { "id": "marked-complement", "name": "Complement as Theme", "gloss": "That book, I've read" }
+        ]
+      },
+      {
+        "id": "TOPICAL_THEME_TYPE",
+        "name": "TOPICAL THEME TYPE",
+        "rank": "clause",
+        "entry": { "op": "root" },
+        "terms": [
+          { "id": "topical-participant",  "name": "participant",  "gloss": "The lion caught it" },
+          { "id": "topical-circumstance", "name": "circumstance", "gloss": "In the jungle, it hunted" },
+          { "id": "topical-process",      "name": "process",      "gloss": "Catching it was hard" }
+        ]
+      },
+      {
+        "id": "TEXTUAL_THEME",
+        "name": "TEXTUAL THEME",
+        "rank": "clause",
+        "entry": { "op": "root" },
+        "terms": [
+          { "id": "textual-present", "name": "present", "realization": ["+Textual Theme"] },
+          { "id": "textual-absent",  "name": "absent" }
+        ]
+      },
+      {
+        "id": "TEXTUAL_THEME_TYPE",
+        "name": "TEXTUAL THEME TYPE",
+        "rank": "element",
+        "entry": { "op": "feature", "value": "textual-present" },
+        "terms": [
+          { "id": "continuative", "name": "continuative", "gloss": "well, oh, now, yes" },
+          { "id": "structural",   "name": "structural",   "gloss": "and, but, because, when" },
+          { "id": "conjunctive",  "name": "conjunctive",  "gloss": "however, therefore, in fact" }
+        ]
+      },
+      {
+        "id": "INTERPERSONAL_THEME",
+        "name": "INTERPERSONAL THEME",
+        "rank": "clause",
+        "entry": { "op": "root" },
+        "terms": [
+          { "id": "interpersonal-present", "name": "present", "realization": ["+Interpersonal Theme"] },
+          { "id": "interpersonal-absent",  "name": "absent" }
+        ]
+      },
+      {
+        "id": "INTERPERSONAL_THEME_TYPE",
+        "name": "INTERPERSONAL THEME TYPE",
+        "rank": "element",
+        "entry": { "op": "feature", "value": "interpersonal-present" },
+        "terms": [
+          { "id": "int-vocative",      "name": "vocative",      "gloss": "Mary, come here" },
+          { "id": "int-modal-adjunct", "name": "modal Adjunct", "gloss": "probably, surely, frankly" },
+          { "id": "int-finite",        "name": "Finite",        "gloss": "Did she leave?" },
+          { "id": "int-wh",            "name": "WH-element",    "gloss": "Who left?" }
+        ]
+      },
+      {
+        "id": "THEME_PREDICATION",
+        "name": "THEME PREDICATION",
+        "rank": "clause",
+        "entry": { "op": "root" },
+        "terms": [
+          {
+            "id": "predicated",
+            "name": "predicated",
+            "gloss": "It was the lion that caught it",
+            "realization": ["+it ^ Finite"],
+            "ifg_ref": "3.7"
+          },
+          { "id": "non-predicated", "name": "non-predicated" }
+        ]
+      }
+    ]
+  }

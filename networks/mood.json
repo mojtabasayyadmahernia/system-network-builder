@@ -1,0 +1,100 @@
+{
+    "name": "MOOD",
+    "metafunction": "interpersonal",
+    "rank": "clause",
+    "source": "Halliday & Matthiessen (2014), IFG4, Ch. 4",
+    "display": false,
+    "systems": [
+      {
+        "id": "MOOD_TYPE",
+        "name": "MOOD TYPE",
+        "rank": "clause",
+        "entry": { "op": "root" },
+        "terms": [
+          {
+            "id": "indicative",
+            "name": "indicative",
+            "realization": ["+Finite", "+Subject"],
+            "gloss": "exchanging information",
+            "ifg_ref": "4.2"
+          },
+          {
+            "id": "imperative",
+            "name": "imperative",
+            "realization": ["+Predicator"],
+            "gloss": "exchanging goods-&-services",
+            "ifg_ref": "4.5"
+          }
+        ]
+      },
+      {
+        "id": "INDICATIVE_TYPE",
+        "name": "INDICATIVE TYPE",
+        "rank": "clause",
+        "entry": { "op": "feature", "value": "indicative" },
+        "terms": [
+          {
+            "id": "declarative",
+            "name": "declarative",
+            "realization": ["Subject ^ Finite"],
+            "gloss": "statement",
+            "ifg_ref": "4.2"
+          },
+          {
+            "id": "interrogative",
+            "name": "interrogative",
+            "gloss": "question",
+            "ifg_ref": "4.2"
+          }
+        ]
+      },
+      {
+        "id": "INTERROGATIVE_TYPE",
+        "name": "INTERROGATIVE TYPE",
+        "rank": "clause",
+        "entry": { "op": "feature", "value": "interrogative" },
+        "terms": [
+          {
+            "id": "polar",
+            "name": "yes/no",
+            "realization": ["Finite ^ Subject"],
+            "gloss": "polarity questioned",
+            "ifg_ref": "4.2"
+          },
+          {
+            "id": "wh-interrogative",
+            "name": "WH-",
+            "realization": ["+WH"],
+            "gloss": "element questioned",
+            "ifg_ref": "4.2"
+          }
+        ]
+      },
+      {
+        "id": "IMPERATIVE_TYPE",
+        "name": "IMPERATIVE TYPE",
+        "rank": "clause",
+        "entry": { "op": "feature", "value": "imperative" },
+        "terms": [
+          {
+            "id": "jussive",
+            "name": "jussive",
+            "gloss": "'you' imperative — Catch it!",
+            "ifg_ref": "4.5"
+          },
+          {
+            "id": "oblative",
+            "name": "oblative",
+            "gloss": "'I' imperative — Let me catch it",
+            "ifg_ref": "4.5"
+          },
+          {
+            "id": "suggestive",
+            "name": "suggestive",
+            "gloss": "'you and I' imperative — Let's catch it",
+            "ifg_ref": "4.5"
+          }
+        ]
+      }
+    ]
+  }

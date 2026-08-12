@@ -1,0 +1,157 @@
+{
+    "name": "CLAUSE COMPLEX",
+    "metafunction": "logical",
+    "rank": "clause-nexus",
+    "source": "Halliday & Matthiessen (2014), IFG4, Ch. 7",
+    "display": true,
+    "_comment": "Applies to nexuses between ranking clauses only. Embedded (rankshifted) clauses are constituents, not nexus participants, and are excluded.",
+    "systems": [
+      {
+        "id": "TAXIS",
+        "name": "TAXIS",
+        "rank": "clause-nexus",
+        "entry": { "op": "root" },
+        "terms": [
+          {
+            "id": "parataxis",
+            "name": "parataxis",
+            "gloss": "equal status — 1, 2, 3",
+            "ifg_ref": "7.1",
+            "notation": { "primary": "1", "secondary": "2" }
+          },
+          {
+            "id": "hypotaxis",
+            "name": "hypotaxis",
+            "gloss": "unequal status — α, β, γ",
+            "ifg_ref": "7.1",
+            "notation": { "primary": "α", "secondary": "β" }
+          }
+        ]
+      },
+      {
+        "id": "LOGICO_SEMANTIC_TYPE",
+        "name": "LOGICO-SEMANTIC TYPE",
+        "rank": "clause-nexus",
+        "entry": { "op": "root" },
+        "terms": [
+          {
+            "id": "expansion",
+            "name": "expansion",
+            "gloss": "secondary clause expands the primary",
+            "ifg_ref": "7.2"
+          },
+          {
+            "id": "projection",
+            "name": "projection",
+            "gloss": "secondary clause is projected through the primary",
+            "ifg_ref": "7.5"
+          }
+        ]
+      },
+      {
+        "id": "EXPANSION_TYPE",
+        "name": "EXPANSION TYPE",
+        "rank": "clause-nexus",
+        "entry": { "op": "feature", "value": "expansion" },
+        "terms": [
+          {
+            "id": "elaborating",
+            "name": "elaborating",
+            "gloss": "restates, specifies, comments — 'i.e.'",
+            "notation": { "symbol": "=" },
+            "ifg_ref": "7.3"
+          },
+          {
+            "id": "extending",
+            "name": "extending",
+            "gloss": "adds, replaces, offers alternative — 'and'",
+            "notation": { "symbol": "+" },
+            "ifg_ref": "7.3"
+          },
+          {
+            "id": "enhancing",
+            "name": "enhancing",
+            "gloss": "qualifies by time, place, manner, cause — 'so'",
+            "notation": { "symbol": "×" },
+            "ifg_ref": "7.3"
+          }
+        ]
+      },
+      {
+        "id": "PROJECTION_TYPE",
+        "name": "PROJECTION TYPE",
+        "rank": "clause-nexus",
+        "entry": { "op": "feature", "value": "projection" },
+        "terms": [
+          {
+            "id": "locution",
+            "name": "locution",
+            "gloss": "projection of wording — saying",
+            "notation": { "symbol": "\"" },
+            "ifg_ref": "7.5"
+          },
+          {
+            "id": "idea",
+            "name": "idea",
+            "gloss": "projection of meaning — thinking",
+            "notation": { "symbol": "'" },
+            "ifg_ref": "7.5"
+          }
+        ]
+      },
+      {
+        "id": "ELABORATION_TYPE",
+        "name": "ELABORATION TYPE",
+        "rank": "clause-nexus",
+        "entry": { "op": "feature", "value": "elaborating" },
+        "terms": [
+          { "id": "exposition",     "name": "exposition",     "gloss": "in other words" },
+          { "id": "exemplification","name": "exemplification","gloss": "for example" },
+          { "id": "clarification",  "name": "clarification",  "gloss": "in fact, at least" }
+        ]
+      },
+      {
+        "id": "EXTENSION_TYPE",
+        "name": "EXTENSION TYPE",
+        "rank": "clause-nexus",
+        "entry": { "op": "feature", "value": "extending" },
+        "terms": [
+          { "id": "additive",    "name": "additive",    "gloss": "and, nor" },
+          { "id": "adversative", "name": "adversative", "gloss": "but, whereas" },
+          { "id": "variation",   "name": "variation",   "gloss": "instead, except" }
+        ]
+      },
+      {
+        "id": "ENHANCEMENT_TYPE",
+        "name": "ENHANCEMENT TYPE",
+        "rank": "clause-nexus",
+        "entry": { "op": "feature", "value": "enhancing" },
+        "terms": [
+          { "id": "enh-temporal", "name": "temporal", "gloss": "when, after, until" },
+          { "id": "enh-spatial",  "name": "spatial",  "gloss": "where" },
+          { "id": "enh-manner",   "name": "manner",   "gloss": "as if, by" },
+          { "id": "enh-causal",   "name": "causal-conditional", "gloss": "because, if, although" }
+        ]
+      },
+      {
+        "id": "PROJECTION_MODE",
+        "name": "PROJECTION MODE",
+        "rank": "clause-nexus",
+        "entry": { "op": "feature", "value": "projection" },
+        "terms": [
+          {
+            "id": "quoting",
+            "name": "quoting",
+            "gloss": "paratactic projection — direct speech",
+            "ifg_ref": "7.5"
+          },
+          {
+            "id": "reporting",
+            "name": "reporting",
+            "gloss": "hypotactic projection — indirect speech",
+            "ifg_ref": "7.5"
+          }
+        ]
+      }
+    ]
+  }

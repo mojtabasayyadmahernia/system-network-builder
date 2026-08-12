@@ -1,0 +1,43 @@
+[
+  {
+    "clause": "The lion caught the tourist",
+    "network": "TRANSITIVITY", "rank": "clause",
+    "features": ["material", "transformative", "effective", "non-circumstantial-clause"],
+    "expect_valid": true
+  },
+  {
+    "clause": "Mary saw the bird",
+    "network": "TRANSITIVITY", "rank": "clause",
+    "features": ["mental", "perceptive", "like-type", "middle", "non-circumstantial-clause"],
+    "expect_valid": true
+  },
+  {
+    "clause": "The music pleased Mary",
+    "network": "TRANSITIVITY", "rank": "clause",
+    "features": ["mental", "emotive", "please-type", "middle", "non-circumstantial-clause"],
+    "expect_valid": true
+  },
+  {
+    "clause": "Sarah is the treasurer",
+    "network": "TRANSITIVITY", "rank": "clause",
+    "features": ["relational", "identifying", "intensive", "middle", "non-circumstantial-clause"],
+    "expect_valid": true
+  },
+  {
+    "clause": "There was a storm",
+    "network": "TRANSITIVITY", "rank": "clause",
+    "features": ["existential", "middle", "non-circumstantial-clause"],
+    "expect_valid": true
+  },
+  {
+    "clause": "Yesterday she ran quickly",
+    "network": "TRANSITIVITY", "rank": "clause",
+    "features": ["material", "transformative", "middle", "circumstantial-clause"],
+    "sub_selections": [
+      { "rank": "element", "features": ["location"], "span": "Yesterday" },
+      { "rank": "element", "features": ["manner"],   "span": "quickly" }
+    ],
+    "expect_valid": true,
+    "note": "Two circumstances at once — a flat feature list could not express this"
+  }
+]

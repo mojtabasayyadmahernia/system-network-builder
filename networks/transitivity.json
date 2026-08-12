@@ -1,0 +1,117 @@
+{
+    "name": "TRANSITIVITY",
+    "metafunction": "experiential",
+    "rank": "clause",
+    "source": "Halliday & Matthiessen (2014), IFG4, Ch. 5",
+    "systems": [
+      {
+        "id": "PROCESS_TYPE",
+        "name": "PROCESS TYPE",
+        "rank": "clause",
+        "entry": { "op": "root" },
+        "terms": [
+          { "id": "material",    "name": "material",    "realization": ["+Process", "+Actor"],  "gloss": "doing & happening", "ifg_ref": "5.2" },
+          { "id": "mental",      "name": "mental",      "realization": ["+Process", "+Senser"], "gloss": "sensing",           "ifg_ref": "5.3" },
+          { "id": "relational",  "name": "relational",  "realization": ["+Process"],            "gloss": "being & having",    "ifg_ref": "5.4" },
+          { "id": "behavioural", "name": "behavioural", "realization": ["+Process", "+Behaver"],"gloss": "behaving",          "ifg_ref": "5.5" },
+          { "id": "verbal",      "name": "verbal",      "realization": ["+Process", "+Sayer"],  "gloss": "saying",            "ifg_ref": "5.5" },
+          { "id": "existential", "name": "existential", "realization": ["+Process", "+Existent"],"gloss": "existing",         "ifg_ref": "5.5" }
+        ]
+      },
+      {
+        "id": "AGENCY",
+        "name": "AGENCY",
+        "rank": "clause",
+        "entry": { "op": "root" },
+        "terms": [
+          { "id": "middle",    "name": "middle" },
+          { "id": "effective", "name": "effective", "realization": ["+Agent"] }
+        ]
+      },
+      {
+        "id": "MATERIAL_TYPE",
+        "name": "MATERIAL TYPE",
+        "rank": "clause",
+        "entry": { "op": "feature", "value": "material" },
+        "terms": [
+          { "id": "creative",       "name": "creative" },
+          { "id": "transformative", "name": "transformative" }
+        ]
+      },
+      {
+        "id": "MENTAL_TYPE",
+        "name": "MENTAL TYPE",
+        "rank": "clause",
+        "entry": { "op": "feature", "value": "mental" },
+        "terms": [
+          { "id": "perceptive",  "name": "perceptive" },
+          { "id": "cognitive",   "name": "cognitive" },
+          { "id": "desiderative","name": "desiderative" },
+          { "id": "emotive",     "name": "emotive" }
+        ]
+      },
+      {
+        "id": "MENTAL_DIRECTION",
+        "name": "DIRECTIONALITY",
+        "rank": "clause",
+        "entry": { "op": "feature", "value": "mental" },
+        "terms": [
+          { "id": "like-type",   "name": "like-type",   "gloss": "Senser as Subject" },
+          { "id": "please-type", "name": "please-type", "gloss": "Phenomenon as Subject" }
+        ]
+      },
+      {
+        "id": "RELATIONAL_MODE",
+        "name": "RELATIONAL MODE",
+        "rank": "clause",
+        "entry": { "op": "feature", "value": "relational" },
+        "terms": [
+          { "id": "attributive", "name": "attributive", "realization": ["+Carrier", "+Attribute"] },
+          { "id": "identifying", "name": "identifying", "realization": ["+Token", "+Value"] }
+        ]
+      },
+      {
+        "id": "RELATIONAL_TYPE",
+        "name": "RELATIONAL TYPE",
+        "rank": "clause",
+        "entry": { "op": "feature", "value": "relational" },
+        "terms": [
+          { "id": "intensive",      "name": "intensive" },
+          { "id": "possessive",     "name": "possessive" },
+          { "id": "circumstantial", "name": "circumstantial" }
+        ]
+      },
+      {
+        "id": "VERBAL_TARGETING",
+        "name": "TARGETING",
+        "rank": "clause",
+        "entry": { "op": "feature", "value": "verbal" },
+        "terms": [
+          { "id": "targeting",     "name": "targeting", "realization": ["+Target"] },
+          { "id": "non-targeting", "name": "non-targeting" }
+        ]
+      },
+      {
+        "id": "CIRCUMSTANTIATION",
+        "name": "CIRCUMSTANTIATION",
+        "rank": "clause",
+        "entry": { "op": "root" },
+        "terms": [
+          { "id": "circumstantial-clause",     "name": "with circumstance" },
+          { "id": "non-circumstantial-clause", "name": "without circumstance" }
+        ]
+      },
+      {
+        "id": "CIRCUMSTANCE_TYPE",
+        "name": "CIRCUMSTANCE TYPE",
+        "rank": "element",
+        "entry": { "op": "feature", "value": "circumstantial-clause" },
+        "terms": [
+          { "id": "extent",   "name": "Extent",   "gloss": "duration, distance, frequency" },
+          { "id": "location", "name": "Location", "gloss": "time, place" },
+          { "id": "manner",   "name": "Manner",   "gloss": "means, quality, comparison, degree" },
+          { "id": "cause",    "name": "Cause",    "gloss": "reason, purpose, behalf" }
+        ]
+      }
+    ]
+  }

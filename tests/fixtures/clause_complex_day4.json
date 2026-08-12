@@ -1,0 +1,78 @@
+[
+    {
+      "clause_complex": "The lion caught the tourist || because it was hungry",
+      "network": "CLAUSE COMPLEX",
+      "rank": "clause-nexus",
+      "features": ["hypotaxis", "expansion", "enhancing", "enh-causal"],
+      "expect_valid": true,
+      "expect_notation": { "primary": "α", "secondary": "×β" }
+    },
+    {
+      "clause_complex": "She said || 'I'm leaving'",
+      "network": "CLAUSE COMPLEX",
+      "rank": "clause-nexus",
+      "features": ["parataxis", "projection", "locution", "quoting"],
+      "expect_valid": true,
+      "expect_notation": { "primary": "1", "secondary": "\"2" }
+    },
+    {
+      "clause_complex": "She thought || that he had left",
+      "network": "CLAUSE COMPLEX",
+      "rank": "clause-nexus",
+      "features": ["hypotaxis", "projection", "idea", "reporting"],
+      "expect_valid": true,
+      "expect_notation": { "primary": "α", "secondary": "'β" }
+    },
+    {
+      "clause_complex": "He came in || and sat down",
+      "network": "CLAUSE COMPLEX",
+      "rank": "clause-nexus",
+      "features": ["parataxis", "expansion", "extending", "additive"],
+      "expect_valid": true,
+      "expect_notation": { "primary": "1", "secondary": "+2" }
+    },
+    {
+      "clause_complex": "John left early || — he was tired, in fact",
+      "network": "CLAUSE COMPLEX",
+      "rank": "clause-nexus",
+      "features": ["parataxis", "expansion", "elaborating", "clarification"],
+      "expect_valid": true,
+      "expect_notation": { "primary": "1", "secondary": "=2" }
+    },
+    {
+      "clause_complex": "—",
+      "network": "CLAUSE COMPLEX",
+      "rank": "clause-nexus",
+      "features": ["hypotaxis", "projection", "enhancing"],
+      "expect_valid": false,
+      "expect_error": "entry_condition_unsatisfied",
+      "note": "enhancing requires expansion, not projection"
+    },
+    {
+      "clause_complex": "—",
+      "network": "CLAUSE COMPLEX",
+      "rank": "clause-nexus",
+      "features": ["hypotaxis", "parataxis", "expansion", "enhancing", "enh-causal"],
+      "expect_valid": false,
+      "expect_error": "mutual_exclusivity",
+      "note": "both terms of TAXIS"
+    },
+    {
+      "clause_complex": "—",
+      "network": "CLAUSE COMPLEX",
+      "rank": "clause-nexus",
+      "features": ["hypotaxis", "expansion"],
+      "expect_valid": false,
+      "expect_error": "incomplete",
+      "note": "EXPANSION TYPE entered but unchosen"
+    },
+    {
+      "clause_complex": "—",
+      "network": "CLAUSE COMPLEX",
+      "rank": "clause-nexus",
+      "features": ["hypotaxis", "expansion", "enhancing", "enh-causal", "material"],
+      "expect_valid": false,
+      "expect_error": "rank_mismatch",
+      "note": "'material' is a clause-rank feature; not permitted in a nexus expression"
+    }
+  ]
