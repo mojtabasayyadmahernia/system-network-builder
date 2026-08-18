@@ -46,3 +46,12 @@ class Nexus(BaseModel):
         """IFG notation for one clause in this nexus, e.g. 'α' or '×β'."""
         ...
         
+class Clause(BaseModel):
+    id: str
+    head_index: int
+    token_indices: list[int]
+    text: str
+    status: Literal["ranking", "embedded"] = "ranking"
+    finite: bool
+    dep_to_parent: str | None = None
+    parent_clause_id: str | None = None

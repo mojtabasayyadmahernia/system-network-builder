@@ -1,3 +1,4 @@
 pydantic
 jsonschema 
 pytest
+spacy
