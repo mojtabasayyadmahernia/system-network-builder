@@ -1,8 +1,8 @@
-from src.segmenter import nlp, find_clause_heads, assign_spans
+from src.segmenter import nlp, find_clause_heads, assign_spans, find_marker
 
-doc = nlp("The lion caught the tourist because it was hungry.")
+doc = nlp("He left because he was tired.")
 heads = find_clause_heads(doc)
 spans = assign_spans(doc, heads)
 
-for head_i, tokens in spans.items():
-    print(f"{doc[head_i].text:10} -> {' '.join(t.text for t in tokens)}")
+for h in heads:
+    print(f"{h.text:8} marker = {find_marker(h, spans[h.i])}")

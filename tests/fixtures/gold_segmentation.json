@@ -1,0 +1,48 @@
+[
+    {
+      "text": "The man who left early was tired.",
+      "clauses": [
+        { "text": "The man was tired", "status": "ranking" },
+        { "text": "who left early",    "status": "embedded" }
+      ],
+      "nexus_count": 0,
+      "note": "Defining relative — embedded, no nexus"
+    },
+    {
+      "text": "John, who left early, was tired.",
+      "clauses": [
+        { "text": "John was tired",  "status": "ranking" },
+        { "text": "who left early",  "status": "ranking" }
+      ],
+      "nexus_count": 1,
+      "nexus_features": ["hypotaxis", "expansion", "elaborating", "exposition"],
+      "note": "Non-defining relative — hypotactic elaborating. Contrast with the above."
+    },
+    {
+      "text": "The lion caught the tourist because it was hungry.",
+      "clauses": [
+        { "text": "The lion caught the tourist", "status": "ranking" },
+        { "text": "because it was hungry",       "status": "ranking" }
+      ],
+      "nexus_count": 1,
+      "nexus_features": ["hypotaxis", "expansion", "enhancing", "enh-causal"]
+    },
+    {
+      "text": "She said that he had left.",
+      "clauses": [
+        { "text": "She said",         "status": "ranking" },
+        { "text": "that he had left", "status": "ranking" }
+      ],
+      "nexus_count": 1,
+      "nexus_features": ["hypotaxis", "projection", "locution", "reporting"]
+    },
+    {
+      "text": "That he left surprised me.",
+      "clauses": [
+        { "text": "surprised me", "status": "ranking" },
+        { "text": "That he left", "status": "embedded" }
+      ],
+      "nexus_count": 0,
+      "note": "Clausal subject — embedded fact clause"
+    }
+  ]
