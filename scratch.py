@@ -1,8 +1,16 @@
-from src.segmenter import nlp, find_clause_heads, assign_spans, find_marker
+from src.segmenter import nlp, segment
+from src.theme import detect_mood
 
-doc = nlp("He left because he was tired.")
-heads = find_clause_heads(doc)
-spans = assign_spans(doc, heads)
+sentences = [
+    "The lion caught the tourist.",
+    "Did the lion catch the tourist?",
+    "Who caught the tourist?",
+    "Catch the tourist!",
+    "Let's catch the tourist.",
+]
 
-for h in heads:
-    print(f"{h.text:8} marker = {find_marker(h, spans[h.i])}")
+for text in sentences:
+    doc = nlp(text)
+    clause = segment(text)[0]
+    features, conf, reason = detect_mood(clause, doc)
+    print(f"{text:35} {sorted(features)}  ({reason})")
