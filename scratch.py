@@ -1,27 +1,15 @@
-from src.transitivity import analyse_text_transitivity
+"""Draw system networks for some sentences."""
 
-TESTS = [
-    "The lion caught the tourist.",
-    "Mary saw the bird.",
-    "The music pleased Mary.",
-    "Sarah is the treasurer.",
-    "There was a storm.",
-    "Yesterday she ran quickly in the park.",
-]
+from src.draw import draw, draw_all
 
-for text in TESTS:
-    print(f"\n{'='*60}\n{text}")
-    for a in analyse_text_transitivity(text):
-        print(f"\n  Process: {a['process']} ({a['process_lemma']})")
-        print(f"  Features: {sorted(a['selection'].features)}")
-        print("  Participants:")
-        for p in a["participants"]:
-            print(f"    {p['role']:12} {p['text']}")
-        if a["circumstances"]:
-            print("  Circumstances:")
-            for c in a["circumstances"]:
-                print(f"    {c['feature']:12} {c['text']}")
-        print(f"  Confidence: {a['confidence']:.2f}")
-        print("  Why:")
-        for e in a["evidence"]:
-            print(f"    - {e}")
+# one sentence, transitivity only
+draw("The lion caught the tourist.")
+
+# a sentence with two clauses — one diagram per clause
+draw("The lion caught the tourist because it was hungry.")
+
+# all three networks for one sentence
+draw_all("On Saturday they left.")
+
+# with PNG output (needs: pip install cairosvg)
+draw("Mary saw the bird.", png=True)
