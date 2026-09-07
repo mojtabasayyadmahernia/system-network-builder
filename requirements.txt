@@ -2,3 +2,4 @@ pydantic
 jsonschema 
 pytest
 spacy
+cairosvg

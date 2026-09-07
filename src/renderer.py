@@ -215,23 +215,16 @@ def place_system(network, system, shown, selected, x, y_top, cache, out):
 # Public API
 # ---------------------------------------------------------------------------
 
-def render_network(network, selection, only_entered=True, title=None):
+def _render_body(network, selected, only_entered=True, y_offset=0):
     """
-    Render a network as an SVG string, with `selection` highlighted.
+    Draw one network's elements.
 
-    `selection` may be a SelectionExpression or a plain set of feature ids.
+    Returns (elements, width, height) so several networks can be stacked
+    into a single SVG.
     """
-    selected = (
-        selection.features if hasattr(selection, "features") else set(selection)
-    )
-    # element-rank sub-selections count as selected for highlighting
-    if hasattr(selection, "sub_selections"):
-        for sub in selection.sub_selections:
-            selected = selected | sub.features
-
     shown = visible_systems(network, selected, only_entered)
     if not shown:
-        return _empty_svg("No systems entered by this selection.")
+        return [], 360, ROW_HEIGHT
 
     cache = {}
     roots = root_systems(network, shown)
@@ -240,24 +233,93 @@ def render_network(network, selection, only_entered=True, title=None):
 
     out = []
     x0 = PAD_X + BRACKET_GAP
-    y0 = PAD_Y + (44 if title else 14)
-    total_height = place_group(network, roots, shown, selected, x0, y0, cache, out)
+    height = place_group(network, roots, shown, selected, x0, y_offset, cache, out)
 
     max_delicacy = _max_depth(network, roots, shown)
     width = PAD_X * 2 + BRACKET_GAP + (max_delicacy + 1) * COL_WIDTH
-    height = y0 + total_height + PAD_Y
+    return out, width, height
 
-    header = ""
-    if title:
-        header = _text(PAD_X, PAD_Y + 6, title, colour=SELECTED, size=15, weight="700")
 
-    body = "".join(out)
+def _features_of(selection):
+    """Accept a SelectionExpression or a plain set of feature ids."""
+    if hasattr(selection, "features"):
+        selected = set(selection.features)
+        for sub in getattr(selection, "sub_selections", []):
+            selected |= set(sub.features)
+        return selected
+    return set(selection)
+
+
+def _svg(elements, width, height):
     return (
         f'<svg xmlns="http://www.w3.org/2000/svg" width="{width:.0f}" '
         f'height="{height:.0f}" viewBox="0 0 {width:.0f} {height:.0f}">'
         f'<rect width="100%" height="100%" fill="{BACKGROUND}"/>'
-        f'{header}{body}</svg>'
+        + "".join(elements) + "</svg>"
     )
+
+
+def render_network(network, selection, only_entered=True, title=None):
+    """Render one network as an SVG string, with `selection` highlighted."""
+    selected = _features_of(selection)
+
+    y0 = PAD_Y + (44 if title else 14)
+    elements, width, height = _render_body(network, selected, only_entered,
+                                           y_offset=y0)
+    if not elements:
+        return _empty_svg("No systems entered by this selection.")
+
+    header = []
+    if title:
+        header.append(_text(PAD_X, PAD_Y + 6, title, colour=SELECTED,
+                            size=15, weight="700"))
+
+    return _svg(header + elements, width, y0 + height + PAD_Y)
+
+
+def render_combined(sections, title=None, only_entered=True):
+    """
+    Stack several networks into one SVG.
+
+    `sections` is a list of (heading, network, selection) triples.
+    Sections whose selection is None are skipped.
+    """
+    elements = []
+    width = 0
+    y = PAD_Y + (46 if title else 14)
+
+    if title:
+        elements.append(_text(PAD_X, PAD_Y + 8, title, colour=SELECTED,
+                              size=16, weight="700"))
+
+    for heading, network, selection in sections:
+        if selection is None:
+            continue
+        selected = _features_of(selection)
+
+        elements.append(_text(PAD_X, y, heading, colour=SELECTED,
+                              size=12.5, weight="700"))
+        elements.append(_line(PAD_X, y + 7, PAD_X + 240, y + 7,
+                              colour="#d5dde5", width=1))
+        y += 26
+
+        section_elements, section_width, section_height = _render_body(
+            network, selected, only_entered, y_offset=y
+        )
+        if not section_elements:
+            elements.append(_text(PAD_X + 12, y + 14, "no systems entered",
+                                  colour=UNSELECTED, size=12))
+            y += 40
+            continue
+
+        elements.extend(section_elements)
+        width = max(width, section_width)
+        y += section_height + 24
+
+    if not elements:
+        return _empty_svg("Nothing to draw.")
+
+    return _svg(elements, max(width, 420), y + PAD_Y)
 
 
 def _max_depth(network, systems, shown, depth=0):

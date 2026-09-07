@@ -5,14 +5,16 @@ Usage from Python:
 
     from src.draw import draw
 
-    draw("The lion caught the tourist.")
-    draw("She saw the bird.", networks=["transitivity", "theme"])
-    draw("He laughed.", png=True)
+    draw("The lion caught the tourist.")            # all three networks, one image
+    draw("She saw the bird.", networks=["theme"])   # just one network
+    draw("He laughed.", png=True)                   # also write a PNG
+    draw("He laughed.", separate=True)              # one file per network
 
 Usage from the command line:
 
     python -m src.draw "The lion caught the tourist."
     python -m src.draw "She saw the bird." --png
+    python -m src.draw "He laughed." -n theme mood
 """
 
 import os
@@ -20,7 +22,7 @@ import re
 
 from src.analyser import analyse_text, NETWORKS
 from src.model import SelectionExpression
-from src.renderer import render_network
+from src.renderer import render_network, render_combined
 
 OUTPUT_DIR = "output"
 
@@ -81,14 +83,17 @@ def _to_png(svg_path):
 
 def draw(
     sentence,
-    networks=("transitivity",),
+    networks=("transitivity", "theme", "mood"),
     output_dir=OUTPUT_DIR,
     png=False,
     only_entered=True,
     quiet=False,
+    separate=False,
 ):
     """
-    Analyse a sentence and draw a system network for each of its clauses.
+    Analyse a sentence and draw its system networks.
+
+    By default all three networks go into ONE image per clause.
 
     sentence     the text to analyse
     networks     which networks to draw: "transitivity", "theme", "mood"
@@ -96,6 +101,7 @@ def draw(
     png          also write a PNG (needs cairosvg or svglib installed)
     only_entered draw only the systems this clause actually entered
     quiet        suppress the printed summary
+    separate     write one file per network instead of one combined image
 
     Returns a list of the file paths written.
     """
@@ -115,36 +121,53 @@ def draw(
 
     multi = len(result["clauses"]) > 1
 
+    def _write(path, svg, label):
+        with open(path, "w", encoding="utf-8") as f:
+            f.write(svg)
+        written.append(path)
+        if png:
+            png_path = _to_png(path)
+            if png_path:
+                written.append(png_path)
+            elif not quiet:
+                print("  (PNG skipped — run: pip install cairosvg)")
+        if not quiet:
+            print(f"  {label}: {path}")
+
     for clause in result["clauses"]:
-        for network_key in networks:
-            selection = _selection_for(clause, network_key)
-            if selection is None:
-                continue                      # non-finite clause has no mood
+        title = clause["text"] if multi else sentence
+        suffix = f"_{clause['clause_id']}" if multi else ""
 
-            title = clause["text"] if multi else sentence
-            svg = render_network(
-                NETWORKS[network_key],
-                selection,
-                only_entered=only_entered,
-                title=f"{title}  —  {network_key.upper()}",
-            )
-
-            suffix = f"_{clause['clause_id']}" if multi else ""
-            path = os.path.join(output_dir, f"{stem}{suffix}_{network_key}.svg")
-            with open(path, "w", encoding="utf-8") as f:
-                f.write(svg)
-            written.append(path)
-
-            if png:
-                png_path = _to_png(path)
-                if png_path:
-                    written.append(png_path)
-                elif not quiet:
-                    print("  (PNG skipped — run: pip install cairosvg)")
-
-            if not quiet:
-                print(f"  {clause['clause_id']} [{clause['status']}] "
-                      f"{network_key}: {path}")
+        if separate:
+            for network_key in networks:
+                selection = _selection_for(clause, network_key)
+                if selection is None:
+                    continue              # non-finite clause has no mood
+                svg = render_network(
+                    NETWORKS[network_key], selection,
+                    only_entered=only_entered,
+                    title=f"{title}  —  {network_key.upper()}",
+                )
+                path = os.path.join(
+                    output_dir, f"{stem}{suffix}_{network_key}.svg"
+                )
+                _write(path, svg,
+                       f"{clause['clause_id']} [{clause['status']}] {network_key}")
+        else:
+            sections = []
+            for network_key in networks:
+                selection = _selection_for(clause, network_key)
+                if selection is None:
+                    continue
+                sections.append(
+                    (network_key.upper(), NETWORKS[network_key], selection)
+                )
+            if not sections:
+                continue
+            svg = render_combined(sections, title=title,
+                                  only_entered=only_entered)
+            path = os.path.join(output_dir, f"{stem}{suffix}.svg")
+            _write(path, svg, f"{clause['clause_id']} [{clause['status']}]")
 
     if not quiet and result["nexuses"]:
         for n in result["nexuses"]:
@@ -155,7 +178,7 @@ def draw(
 
 
 def draw_all(sentence, **kwargs):
-    """Draw transitivity, theme and mood for a sentence."""
+    """Draw all three networks (this is now the default)."""
     return draw(sentence, networks=("transitivity", "theme", "mood"), **kwargs)
 
 
@@ -171,12 +194,13 @@ def _main():
     )
     parser.add_argument("sentence", help="the sentence to analyse")
     parser.add_argument(
-        "-n", "--networks", nargs="+", default=["transitivity"],
+        "-n", "--networks", nargs="+",
+        default=["transitivity", "theme", "mood"],
         choices=["transitivity", "theme", "mood"],
-        help="which networks to draw (default: transitivity)",
+        help="which networks to draw (default: all three)",
     )
-    parser.add_argument("-a", "--all", action="store_true",
-                        help="draw all three networks")
+    parser.add_argument("-s", "--separate", action="store_true",
+                        help="one file per network instead of one combined image")
     parser.add_argument("-o", "--output", default=OUTPUT_DIR,
                         help="output directory (default: output)")
     parser.add_argument("--png", action="store_true",
@@ -185,14 +209,14 @@ def _main():
                         help="draw the whole network, not just entered systems")
 
     args = parser.parse_args()
-    networks = ("transitivity", "theme", "mood") if args.all else tuple(args.networks)
 
     draw(
         args.sentence,
-        networks=networks,
+        networks=tuple(args.networks),
         output_dir=args.output,
         png=args.png,
         only_entered=not args.full,
+        separate=args.separate,
     )
 
 
