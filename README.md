@@ -10,32 +10,58 @@ Reference grammar: Halliday & Matthiessen (2014), *Introduction to Functional Gr
 
 ---
 
-## Try it
+## Run the app
+
+The easiest way in is the web interface.
 
 ```bash
 pip install -r requirements.txt
 python -m spacy download en_core_web_sm
+streamlit run app/streamlit_app.py
+```
+
+It opens at `http://localhost:8501`. The first load takes a few seconds while spaCy loads its model.
+
+Paste text on the left, choose which networks to analyse in the sidebar, and the results come back in three tabs:
+
+| Tab | What's in it |
+|---|---|
+| **Numeric results** | Frequency tables and charts for every system, participant and circumstance counts, and one row per clause — downloadable as CSV |
+| **Clause by clause** | Each clause with its Theme/Rheme split, process and participants, the systems chosen, and the reasoning for each |
+| **System networks** | The diagram for each clause, with a download button |
+
+The sidebar also lets you narrow which systems appear in the tables, include or exclude embedded clauses, show the full network instead of only the systems entered, and set the confidence threshold at which weak choices get flagged.
+
+---
+
+## Other ways to run it
+
+**From the command line**, to write diagrams straight to `output/`:
+
+```bash
 python -m src.draw "The lion caught the tourist because it was hungry."
 ```
 
-Writes one SVG per clause to `output/`. Add `--all` for all three networks, `--png` for PNG output.
+One SVG per clause, containing all three networks. Add `--separate` for one file per network, `--png` to also write PNGs, `-n theme mood` to narrow it down.
 
-From Python:
+**From Python**, for the diagrams:
 
 ```python
-from src.draw import draw, draw_all
+from src.draw import draw
 
 draw("Mary saw the bird.")
-draw_all("On Saturday they left.")
+draw("On Saturday they left.", networks=["theme"])
 ```
 
-Or get the analysis as data:
+**Or for the analysis as data:**
 
 ```python
 from src.analyser import analyse_text
 
 result = analyse_text("She said that he had left.")
 ```
+
+Everything `analyse_text` returns is JSON-serialisable, so it drops straight into an API response.
 
 ---
 
@@ -50,7 +76,7 @@ result = analyse_text("She said that he had left.")
 | | What it works out |
 |---|---|
 | **MOOD** | declarative, polar / WH-interrogative, imperative (jussive, oblative, suggestive) |
-| **THEME** | the Theme/Rheme boundary, textual and interpersonal elements, topical type, markedness, predication |
+| **THEME** | the Theme/Rheme boundary, textual and interpersonal elements, Vocatives, topical type, markedness (including exclamatives), predication |
 | **TRANSITIVITY** | process type, subtypes, participant roles, circumstances, agency |
 
 **Explains itself.** Every choice carries a confidence and a written reason: *"'saw' is a mental process"*, *"Subject as Theme — unmarked for declarative"*, *"projected by 'said'"*. Where the evidence is weak the confidence drops rather than the tool guessing silently.
@@ -85,6 +111,8 @@ The diagram shows PROCESS TYPE and AGENCY braced together as simultaneous system
 
 **Rank is first-class.** TRANSITIVITY and THEME are clause-rank; TAXIS and LOGICO-SEMANTIC TYPE are clause-*nexus* rank, describing a relation rather than a property; circumstance type is element-rank, because one clause can carry several circumstances at once. "Yesterday she ran quickly" has both Location and Manner, which a flat feature set cannot express — so selection expressions are two-level.
 
+**Interpersonal elements are kept out of the experiential structure.** A Vocative is direct address: in *"You great star, what would your happiness be?"* it is interpersonal Theme, not the topical Theme, and it can never be a participant. It is recognised once and then excluded from the topical Theme, from MOOD's first-element test, and from the participants and circumstances of TRANSITIVITY.
+
 ---
 
 ## Validation
@@ -114,13 +142,14 @@ Failures name the rule, the system and the features involved.
 | `src/traversal.py` | Entered systems, available choices, delicacy, simultaneity |
 | `src/validator.py` | The five rules |
 | `src/notation.py` | IFG clause-complex notation (α, ×β, "2) |
-| `src/segmenter.py` | Clause segmentation, ranking vs embedded, nexuses |
+| `src/segmenter.py` | Clause segmentation, ranking vs embedded, Vocatives, nexuses |
 | `src/theme.py` | MOOD and THEME analysis |
 | `src/transitivity.py` | TRANSITIVITY analysis |
 | `src/verb_lexicon.py` | Verb lists driving process-type classification |
 | `src/analyser.py` | Ties it together; JSON-ready output |
 | `src/renderer.py` | System networks as SVG |
 | `src/draw.py` | Sentence in, diagram out |
+| `app/streamlit_app.py` | The web interface |
 
 ```bash
 pytest
@@ -130,7 +159,7 @@ pytest
 
 ## Accuracy
 
-Process type is the hard part, and it is semantic rather than syntactic: *"she saw him"* and *"she hit him"* are structurally identical but construe different processes. Classification therefore runs from a curated verb lexicon plus syntactic disambiguation rules, and a verb outside the lexicon is flagged with low confidence rather than guessed at.
+Process type is the hard part, and it is semantic rather than syntactic: *"she saw him"* and *"she hit him"* are structurally identical but construe different processes. Classification therefore runs from a curated verb lexicon of around 1,200 verbs plus syntactic disambiguation rules. A verb outside the lexicon is flagged with low confidence rather than guessed at, and a verb that could belong to several process types — *feel*, *make*, *have* — has its confidence reduced in proportion to how many readings it has.
 
 Clause status is the other weak point. Defining and non-defining relatives differ only by commas, and writers are inconsistent, so those cases are marked low-confidence rather than asserted.
 
@@ -144,6 +173,7 @@ Evaluation against a hand-annotated gold standard is in progress; per-system fig
 - **No grammatical metaphor.** Nominalization concealing a process is out of scope — it needs the buried process recovered, which is a research problem rather than a feature.
 - **`xcomp` is treated as a verbal group complex**, so *"wanted to leave"* is one clause. IFG is genuinely divided on this; the position is deliberate and flagged at low confidence.
 - **Circumstantiation covers the frequent four** — Extent, Location, Manner, Cause — not all nine types.
+- **Exclamatives are recognised for Theme markedness but still labelled `wh-interrogative` in MOOD.**
 - **Delicacy stops well short of IFG4.** Two or three levels, not the limits of the grammar. Extending it is a JSON edit, by design.
 - **English, with declaratives as the primary case.**
 
@@ -151,7 +181,7 @@ Evaluation against a hand-annotated gold standard is in progress; per-system fig
 
 ## Prior art
 
-Mick O'Donnell's [UAM CorpusTool](http://www.corpustool.com/) supports SFL annotation, but as manual and semi-automatic desktop software. This project aims at automatic analysis with the reasoning made visible — closer to a teaching and exploration tool than an annotation environment.
+Mick O'Donnell's [UAM CorpusTool](http://www.corpustool.com/) supports SFL annotation, but as manual and semi-automatic desktop software. This project aims at automatic analysis with the reasoning made visible, closer to a teaching and exploration tool than an annotation environment.
 
 ## Licence
 
