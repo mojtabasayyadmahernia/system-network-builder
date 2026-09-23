@@ -21,6 +21,7 @@ from src.verb_lexicon import (
     BEHAVIOURAL_VERBS,
     LOCATION_PREPS, EXTENT_PREPS, MANNER_PREPS, CAUSE_PREPS,
     TIME_ADVERBS, FREQUENCY_ADVERBS, PLACE_ADVERBS,
+    ambiguity_penalty, is_known, lookup,
 )
 
 SUBJECT_DEPS = {"nsubj", "nsubjpass"}
@@ -74,9 +75,26 @@ def classify_process(clause, doc):
 
     Checked in order of how reliable the evidence is: syntactic patterns
     first (existential 'there', copular complements), then the lexicon.
+    A verb that could belong to several process types has its confidence
+    reduced, so the uncertainty is visible rather than hidden.
 
     Returns (features, confidence, reason).
     """
+    features, confidence, reason = _classify_process_raw(clause, doc)
+
+    lemma = doc[clause.head_index].lemma_.lower()
+    penalty = ambiguity_penalty(lemma)
+    if penalty:
+        others = sorted(set(lookup(lemma)) - features)
+        if others:
+            reason += f"; '{lemma}' can also be {'/'.join(others)}"
+        confidence = max(0.2, confidence - penalty)
+
+    return features, confidence, reason
+
+
+def _classify_process_raw(clause, doc):
+    """The ordered tests, before any ambiguity adjustment."""
     head = doc[clause.head_index]
     lemma = head.lemma_.lower()
 

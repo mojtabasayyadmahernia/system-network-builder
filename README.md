@@ -1,87 +1,158 @@
 # SFL System Network Builder
 
-A Python library that represents Systemic Functional Linguistics system networks as data, and validates analyses against them.
+Analyses English sentences using Systemic Functional Linguistics and draws the resulting system networks.
 
-Given a set of grammatical features like `{material, effective, transformative}`, it answers: which systems does this enter, what still needs choosing, and is this a legal selection?
+Give it a sentence; it finds the clauses, works out how they relate, analyses each one for TRANSITIVITY, THEME and MOOD, and renders a diagram with the selected path highlighted and every choice explained.
 
-**Status:** Phase 1 of a larger project. This is the grammar engine only — it knows the networks and nothing about text. Automatic analysis of real sentences comes later. Nothing here imports spaCy.
+![Example system network](docs/example.png)
 
 Reference grammar: Halliday & Matthiessen (2014), *Introduction to Functional Grammar*, 4th edition.
 
 ---
 
-## What a system network is
-
-In SFL, grammar is modelled as sets of choices rather than a list of structures. A **system** is a choice between mutually exclusive options, with an **entry condition** saying when that choice arises. Choosing `material` opens further choices — creative or transformative — that don't exist for a `mental` clause.
-
-Moving left to right through a network is increasing **delicacy**. Systems sharing an entry condition are **simultaneous**: both must be chosen from.
-
-A complete analysis of a clause is a **selection expression** — the set of features chosen across every system the clause entered.
-
-## What's encoded
-
-| Network | Metafunction | Rank |
-|---|---|---|
-| TRANSITIVITY | experiential | clause |
-| THEME | textual | clause |
-| MOOD | interpersonal | clause |
-| CLAUSE COMPLEX | logical | clause nexus |
-
-MOOD is marked `display: false` — it exists because Theme markedness is defined relative to mood, but it isn't shown as a network in its own right yet.
-
-## Modelling decisions
-
-Each of these is a place where the encoding forced a choice the theory leaves open.
-
-**Simultaneity is derived, not declared.** Two systems are simultaneous exactly when they share an entry condition, so the code computes it rather than storing a flag. One less thing to keep consistent by hand.
-
-**Circumstances are element-rank.** "Yesterday she ran quickly" has two circumstances at once. A single clause-level feature can't hold two answers, so circumstance type is chosen once per circumstantial element. Selection expressions are therefore two-level: a clause-level set plus zero or more element-level sub-selections.
-
-**Multiple Theme is derived.** The alternative — a THEME COMPLEXITY system choosing simple/multiple before selecting the parts — is circular. You know a Theme is multiple *because* you found a textual or interpersonal element. So the parts are selected and multiplicity is computed.
-
-**Markedness is one system, not four.** Unmarked Theme means something different in each mood. That could be encoded as four mood-conditional systems, which would show the dependency in the diagram. Instead there's a single THEME SELECTION with the per-mood criteria stored as data on each term, so the information survives without the system count multiplying.
-
-**Embedded clauses are excluded from nexuses.** Hypotaxis is a relation between two ranking clauses; embedding is a clause functioning as a constituent of a group. Both look like "a clause inside a clause," but only the first is a clause complex. Rank is a first-class property in the model so the validator can enforce this.
-
-## Running it
+## Try it
 
 ```bash
 pip install -r requirements.txt
-pytest
+python -m spacy download en_core_web_sm
+python -m src.draw "The lion caught the tourist because it was hungry."
 ```
 
-Tests cover entry-condition evaluation, network traversal, all five validation rules, and a set of hand-written gold analyses.
+Writes one SVG per clause to `output/`. Add `--all` for all three networks, `--png` for PNG output.
 
-## Validation rules
+From Python:
+
+```python
+from src.draw import draw, draw_all
+
+draw("Mary saw the bird.")
+draw_all("On Saturday they left.")
+```
+
+Or get the analysis as data:
+
+```python
+from src.analyser import analyse_text
+
+result = analyse_text("She said that he had left.")
+```
+
+---
+
+## What it does
+
+**Finds the clauses.** Splits a sentence on the dependency parse and works out which clauses are *ranking* (part of a clause complex) and which are *embedded* (constituents of a group). That distinction matters: `The man [[who left early]] was tired` has an embedded relative clause, while `John, || who left early, || was tired` has a hypotactic one. Only ranking clauses take part in clause complexes.
+
+**Relates them.** Builds a nexus for each link between ranking clauses, classifying taxis (parataxis or hypotaxis) and logico-semantic type (elaborating, extending, enhancing, locution, idea), and renders the IFG notation — `α ×β`, `1 "2`.
+
+**Analyses each clause:**
+
+| | What it works out |
+|---|---|
+| **MOOD** | declarative, polar / WH-interrogative, imperative (jussive, oblative, suggestive) |
+| **THEME** | the Theme/Rheme boundary, textual and interpersonal elements, topical type, markedness, predication |
+| **TRANSITIVITY** | process type, subtypes, participant roles, circumstances, agency |
+
+**Explains itself.** Every choice carries a confidence and a written reason: *"'saw' is a mental process"*, *"Subject as Theme — unmarked for declarative"*, *"projected by 'said'"*. Where the evidence is weak the confidence drops rather than the tool guessing silently.
+
+**Checks its own work.** Every analysis is validated against the network definition before it's returned. An analysis that skips a system it entered is caught, not shipped.
+
+---
+
+## Example
+
+```
+Mary saw the bird.
+
+  Theme:   Mary  ||  Rheme: saw the bird
+  Process: saw (mental, perceptive, like-type)
+  Senser:      Mary
+  Phenomenon:  the bird
+  Agency:      effective
+```
+
+The diagram shows PROCESS TYPE and AGENCY braced together as simultaneous systems, `mental` selected with `material`, `relational` and the rest greyed beside it, and the line running right into MENTAL TYPE where `perceptive` is chosen.
+
+---
+
+## Design
+
+**The grammar is data, not code.** The four networks live in `networks/*.json` as systems, terms, entry conditions and realization statements. The engine reads them; it doesn't hardcode them. Adding delicacy is a JSON edit, and the diagrams update automatically.
+
+**The engine knows nothing about text.** `src/model.py`, `conditions.py`, `traversal.py` and `validator.py` operate purely on feature sets — nothing there imports spaCy. The analysers sit on top and ask the engine whether their answers are well-formed. When something goes wrong you know immediately whether it's a parsing problem or a grammar-encoding problem.
+
+**Anything derivable is derived.** Simultaneity comes from systems sharing an entry condition, not from a flag. Multiple Theme is computed from the presence of textual or interpersonal elements, not selected — the alternative would be circular, since you only know a Theme is multiple *because* you found those elements.
+
+**Rank is first-class.** TRANSITIVITY and THEME are clause-rank; TAXIS and LOGICO-SEMANTIC TYPE are clause-*nexus* rank, describing a relation rather than a property; circumstance type is element-rank, because one clause can carry several circumstances at once. "Yesterday she ran quickly" has both Location and Manner, which a flat feature set cannot express — so selection expressions are two-level.
+
+---
+
+## Validation
 
 A selection expression is checked against five rules:
 
-1. **Unknown feature** — the feature isn't defined in this network
-2. **Rank mismatch** — a clause-rank feature in a nexus expression, or similar
-3. **Entry unsatisfied** — `transformative` selected without `material`
-4. **Mutual exclusivity** — both `attributive` and `identifying` selected
+1. **Unknown feature** — not defined in this network
+2. **Rank mismatch** — a clause-rank feature in a nexus expression
+3. **Entry unsatisfied** — `transformative` without `material`
+4. **Mutual exclusivity** — both `attributive` and `identifying`
 5. **Incomplete** — a system was entered but nothing chosen from it
 
-Rule 5 is what makes this a *system* network rather than a set of labels: entering a system obliges a choice. `{material}` on its own is invalid, because AGENCY and CIRCUMSTANTIATION were entered and ignored.
+Rule 5 is what makes this a *system* network rather than a set of labels: entering a system obliges a choice. `{material}` alone is invalid, because AGENCY and CIRCUMSTANTIATION were entered and ignored.
 
-Failures return the rule, the system, and the features involved — not just a boolean.
+Failures name the rule, the system and the features involved.
+
+---
 
 ## Structure
 
 | Path | Contents |
 |---|---|
 | `networks/*.json` | The four network definitions |
-| `src/model.py` | Network, System, Term, Condition, SelectionExpression |
+| `src/model.py` | Network, System, Term, Condition, SelectionExpression, Clause, Nexus |
 | `src/loader.py` | JSON to model objects |
 | `src/conditions.py` | Entry-condition evaluation |
 | `src/traversal.py` | Entered systems, available choices, delicacy, simultaneity |
 | `src/validator.py` | The five rules |
 | `src/notation.py` | IFG clause-complex notation (α, ×β, "2) |
-| `tests/fixtures/gold_selections.json` | Hand-written analyses with expected results |
+| `src/segmenter.py` | Clause segmentation, ranking vs embedded, nexuses |
+| `src/theme.py` | MOOD and THEME analysis |
+| `src/transitivity.py` | TRANSITIVITY analysis |
+| `src/verb_lexicon.py` | Verb lists driving process-type classification |
+| `src/analyser.py` | Ties it together; JSON-ready output |
+| `src/renderer.py` | System networks as SVG |
+| `src/draw.py` | Sentence in, diagram out |
+
+```bash
+pytest
+```
+
+---
+
+## Accuracy
+
+Process type is the hard part, and it is semantic rather than syntactic: *"she saw him"* and *"she hit him"* are structurally identical but construe different processes. Classification therefore runs from a curated verb lexicon plus syntactic disambiguation rules, and a verb outside the lexicon is flagged with low confidence rather than guessed at.
+
+Clause status is the other weak point. Defining and non-defining relatives differ only by commas, and writers are inconsistent, so those cases are marked low-confidence rather than asserted.
+
+Evaluation against a hand-annotated gold standard is in progress; per-system figures will be reported here rather than a single aggregate, since one number would hide which part is weak.
+
+---
 
 ## Limitations
 
 - **No nesting in clause complexes.** Nexuses are a flat list, so `1 ^ (2 ^ 3)` and `(1 ^ 2) ^ 3` are not distinguished.
-- **No grammatical metaphor.** Nominalization concealing a process is out of scope.
-- **Delicacy stops well short of IFG4.** The networks go two or three levels deep, not to the limits of the grammar. Adding more is a JSON edit, by design.
-- **English only**, with declaratives as the primary case.
+- **No grammatical metaphor.** Nominalization concealing a process is out of scope — it needs the buried process recovered, which is a research problem rather than a feature.
+- **`xcomp` is treated as a verbal group complex**, so *"wanted to leave"* is one clause. IFG is genuinely divided on this; the position is deliberate and flagged at low confidence.
+- **Circumstantiation covers the frequent four** — Extent, Location, Manner, Cause — not all nine types.
+- **Delicacy stops well short of IFG4.** Two or three levels, not the limits of the grammar. Extending it is a JSON edit, by design.
+- **English, with declaratives as the primary case.**
+
+---
+
+## Prior art
+
+Mick O'Donnell's [UAM CorpusTool](http://www.corpustool.com/) supports SFL annotation, but as manual and semi-automatic desktop software. This project aims at automatic analysis with the reasoning made visible — closer to a teaching and exploration tool than an annotation environment.
+
+## Licence
+
+MIT
